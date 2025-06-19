@@ -3,7 +3,7 @@ from typing import Tuple
 import numpy as np
 
 
-class CroqueMarmotte:
+class CroqueLaitue:
     def __init__(self,
                  num_players: int,
                  num_dalles: int,
@@ -11,7 +11,7 @@ class CroqueMarmotte:
                  ) -> None:
         self.num_players = num_players
         self.num_dalles = num_dalles
-        self._num_lapin = 2 * num_players
+        self._num_marmotte = 2 * num_players
         self._num_qubits = self.num_dalles + self._num_lapin
         self._intrication_map = []
 
@@ -23,17 +23,30 @@ class CroqueMarmotte:
                 self._intrication_map.append(tup)
 
         # case de depart
-        self._position_lapin = {f"{i}": 0 for i in range(self._num_lapin)}
+        self._position_marmotte = {f"{i}": 0 for i in range(self._num_lapin)}
 
     def play_game(self):
-        while not self.partie_terminee:
-            self.jouer_tour()
+        pass
 
-    def jouer_tour(self, action: str):
-        return 0
+    def jouer_round(self):
+        pass
+
+    #Pour chaque joueur
+    def faire_action():
+        pass
+
+    def intriquer(lapin):
+        pass
+
+    def avancer():
+        pass
+
+    #Effet tunnel
+    def terrier(greedyness):
+        pass
 
     def _build_circuit(self, action: str) -> None:
         self._quantum_circuit
 
-    def _update_vies_lapin(self) -> None:
+    def _update_marmotte(self) -> None:
         self._position_lapin = {}
