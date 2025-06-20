@@ -3,6 +3,8 @@ from qiskit_aer import AerSimulator
 import numpy as np
 import sys
 
+from renderer import Renderer
+
 
 class CroqueLaitue:
     def __init__(self,
@@ -17,22 +19,30 @@ class CroqueLaitue:
         self._current_player = 0
         self._registre_marmotte = QuantumRegister(self.num_players)
         self._registre_dalles = QuantumRegister(self.num_dalles)
+        self.renderer = Renderer(num_dalles)
 
         # case de depart
 
-    def play_game(self):
-        print("Début de la partie! \n")
+    def play_game(self) -> None:
+        self.renderer.add_text("Début de la partie!")
+
+        for i in range(len(self._marmottes)):
+            self.renderer.draw_groundhog(0,i)
 
         while not self.partie_terminee:
-            print(f"Tour : {self.tour_courant} \n")
-
+            self.renderer.add_text(f"Tour : {self.tour_courant}")
+            self.renderer.render()
+            
             self.jouer_round()
             self._read_measure()
 
+            self.renderer.clear_render()
             for i, marmotte in enumerate(self._marmottes):
+                self.renderer.draw_groundhog(marmotte["position"], i)
                 if marmotte["position"] == self.num_dalles-1:
                     self.partie_terminee = True
-                    print(f"Partie terminée! Le joueur {i} a gagné!")
+                    self.renderer.add_text(f"Partie terminée! Le joueur {i} a gagné!")
+            
             self.tour_courant += 1
 
     def jouer_round(self):
@@ -137,6 +147,6 @@ class CroqueLaitue:
         for i in range(len(result)):
             if result[i] == "1":
                 self._marmottes[i]["num_marmottes"] -= 1
-                print(f"Oh no! Player {i}, one of your marmotte has been swallowed :(")
+                self.renderer.add_text(f"Oh no! Player {i}, one of your marmotte has been swallowed :(")
                 self._marmottes[i]["position"] = 0
-        print(self._marmottes)
+
