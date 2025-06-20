@@ -2,6 +2,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit_aer import AerSimulator
 import numpy as np
 import sys
+import time
 
 from renderer import Renderer
 
@@ -14,7 +15,7 @@ class CroqueLaitue:
         self.num_players = num_players
         self.num_dalles = num_dalles
         self._marmottes = [{"num_marmottes": 2, "position": 0} for _ in range(num_players)]
-        self.tour_courant = 0
+        self.tour_courant = 1
         self.partie_terminee = False
         self._current_player = 0
         self._registre_marmotte = QuantumRegister(self.num_players)
@@ -50,23 +51,33 @@ class CroqueLaitue:
         classical_reg = ClassicalRegister(self.num_players)
         qc_total = QuantumCircuit(self._registre_marmotte, self._registre_dalles, classical_reg)
         qc_intriq, qc_avancer, qc_terrier = QuantumCircuit(self._registre_marmotte, self._registre_dalles), QuantumCircuit(self._registre_marmotte, self._registre_dalles), QuantumCircuit(self._registre_marmotte, self._registre_dalles)
-        while joueur <= self.num_players - 1:
+        
+        for joueur in range(self.num_players):
+        # while joueur <= self.num_players - 1:
             self._current_player = joueur
             while self._marmottes[joueur]["num_marmottes"] < 1:
                 joueur += 1
                 if joueur > self.num_players - 1:
                     self.partie_terminee = True
                     sys.exit("Partie terminée, vous avez tous perdus!")
-            else:
+            action = None
+            while action not in ["1", "2", "3", "q"]:
+                time.sleep(0.5)
                 action = input(
                     f"Quelle action veux-tu faire, joueur {self._current_player}? (Pour s'intriquer : 1, pour avancer : 2, pour tenter le terrier : 3, pour decalisser : q)")
                 if action == "1":
                     joueur_vlimeux = int(input("Avec quel joueur veux-tu t'intriquer?"))
-                    qc = self.intriquer(joueur_vlimeux)
-                    qc_intriq.compose(qc, inplace=True)
+                    if self._current_player == joueur_vlimeux:
+                        print(f"Joueur {self._current_player}, on ne peut pas s'intriquer avec soi-même!")
+                        action = None
+                    else:
+                        qc = self.intriquer(joueur_vlimeux)
+                        qc_intriq.compose(qc, inplace=True)
+                        print(f"Joueur {self._current_player} s'intrique avec joueur {joueur_vlimeux}")
                 elif action == "2":
                     qc = self.avancer()
                     qc_avancer.compose(qc, inplace=True)
+                    print(f"Joueur {self._current_player} avance d'une case")
                 elif action == "3":
                     greedyness = int(input("De combien de case aimerais-tu avancer?"))
                     qc = self.terrier(greedyness)
@@ -74,8 +85,9 @@ class CroqueLaitue:
                 elif action == "q":
                     sys.exit("Vous avez quitté avec succès.")
                 else:
-                    print("Vous n'avez pas entré une option possible!")
-                joueur += 1
+                    print(f"Vous n'avez pas entré une option possible joueur {self._current_player}!")
+
+            # joueur += 1
 
         qc_complet = self._initialize_circuit()
         qc_complet.compose(qc_avancer, inplace=True)
@@ -118,6 +130,9 @@ class CroqueLaitue:
 
         if random_num < probability:
             self._marmottes[self._current_player]["position"] += greedyness
+            print(f"Terrier succeeded for player {self._current_player}")
+        else:
+            print(f"Terrier failed for player {self._current_player}")
 
         qcircuit.cx(self._registre_dalles[self._marmottes[self._current_player]["position"]],
                     self._registre_marmotte[self._current_player])
@@ -149,4 +164,3 @@ class CroqueLaitue:
                 self._marmottes[i]["num_marmottes"] -= 1
                 self.renderer.add_text(f"Oh no! Player {i}, one of your marmotte has been swallowed :(")
                 self._marmottes[i]["position"] = 0
-
