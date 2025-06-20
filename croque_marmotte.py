@@ -1,6 +1,7 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit_aer import AerSimulator
 import numpy as np
+import sys
 
 
 class CroqueLaitue:
@@ -14,6 +15,8 @@ class CroqueLaitue:
         self.tour_courant = 0
         self.partie_terminee = False
         self._current_player = 0
+        self._registre_marmotte = QuantumRegister(self.num_players)
+        self._registre_dalles = QuantumRegister(self.num_dalles)
 
         # case de depart
 
@@ -21,99 +24,93 @@ class CroqueLaitue:
         print("Début de la partie! \n")
 
         while not self.partie_terminee:
-            print("Tour : 1 \n")
+            print(f"Tour : {self.tour_courant} \n")
 
             self.jouer_round()
             self._read_measure()
+
             for i, marmotte in enumerate(self._marmottes):
-                if marmotte["position"] == self.num_dalles:
+                if marmotte["position"] == self.num_dalles-1:
                     self.partie_terminee = True
-                    print("Partie terminée! Le joueur {i} a gagné!")
-                    self.tour_courant += 1
+                    print(f"Partie terminée! Le joueur {i} a gagné!")
+            self.tour_courant += 1
 
     def jouer_round(self):
         joueur = 0
         classical_reg = ClassicalRegister(self.num_players)
-        quantum_reg = QuantumRegister(self.num_players + self.num_dalles)
-        qc_total = QuantumCircuit(quantum_reg, classical_reg)
-        qc_intriq, qc_avancer, qc_terrier = QuantumCircuit(self.num_players), QuantumCircuit(
-            self.num_players + self.num_dalles), QuantumCircuit(self.num_players + self.num_dalles)
-        while joueur < self.num_players - 1:
+        qc_total = QuantumCircuit(self._registre_marmotte, self._registre_dalles, classical_reg)
+        qc_intriq, qc_avancer, qc_terrier = QuantumCircuit(self._registre_marmotte, self._registre_dalles), QuantumCircuit(self._registre_marmotte, self._registre_dalles), QuantumCircuit(self._registre_marmotte, self._registre_dalles)
+        while joueur <= self.num_players - 1:
             self._current_player = joueur
             while self._marmottes[joueur]["num_marmottes"] < 1:
                 joueur += 1
-            if joueur > self.num_players - 1:
-                self.partie_terminee = True
-                print("Partie terminée, vous avez tous perdus!")
-                exit()
+                if joueur > self.num_players - 1:
+                    self.partie_terminee = True
+                    sys.exit("Partie terminée, vous avez tous perdus!")
             else:
                 action = input(
-                    f"Quelle action veux-tu faire, joueur {self._current_player}? (Pour s'intriquer : 1, pour avancer : 2, pour tenter le terrier : 3)")
-                if action == 1:
-                    joueur = input("Avec quel joueur veux-tu t'intriquer?")
-                    qc = self.intriquer(int(joueur))
-                    qc_intriq.append(qc)
-                elif action == 2:
-                    qc = self.avancer
-                    qc_avancer.append(qc)
-                elif action == 3:
-                    greedyness = input("De combien de case aimerais-tu avancer?")
-                    qc = self.terrier(int(greedyness))
-                    qc_terrier.append(qc)
+                    f"Quelle action veux-tu faire, joueur {self._current_player}? (Pour s'intriquer : 1, pour avancer : 2, pour tenter le terrier : 3, pour decalisser : q)")
+                if action == "1":
+                    joueur_vlimeux = int(input("Avec quel joueur veux-tu t'intriquer?"))
+                    qc = self.intriquer(joueur_vlimeux)
+                    qc_intriq.compose(qc, inplace=True)
+                elif action == "2":
+                    qc = self.avancer()
+                    qc_avancer.compose(qc, inplace=True)
+                elif action == "3":
+                    greedyness = int(input("De combien de case aimerais-tu avancer?"))
+                    qc = self.terrier(greedyness)
+                    qc_terrier.compose(qc, inplace=True)
+                elif action == "q":
+                    sys.exit("Vous avez quitté avec succès.")
                 else:
                     print("Vous n'avez pas entré une option possible!")
                 joueur += 1
 
         qc_complet = self._initialize_circuit()
-        qc_complet.append(qc_avancer)
-        qc_complet.append(qc_terrier)
-        qc_complet.append(qc_intriq, range(self.num_players))
-        qc_total.append(qc_complet)
+        qc_complet.compose(qc_avancer, inplace=True)
+        qc_complet.compose(qc_terrier, inplace=True)
+        qc_complet.compose(qc_intriq, inplace=True)
+        qc_total.compose(qc_complet, inplace=True)
         qc_total.measure(range(self.num_players), range(self.num_players))
-        qc_total.draw("mpl")
         self._quantum_circuit = qc_total
 
     def intriquer(self, entangled_player) -> QuantumCircuit:
-        marmottes_reg = QuantumRegister(self.num_players)
-        dalles_reg = QuantumRegister(self.num_dalles)
-        qcircuit = QuantumCircuit(marmottes_reg, dalles_reg)
+        qcircuit = QuantumCircuit(self._registre_marmotte, self._registre_dalles)
 
         # the current player stays at the same place
         info_current_player = self._marmottes[self._current_player]
-        qcircuit.cx(dalles_reg[info_current_player["position"]] - 1, marmottes_reg[self._current_player])
+        qcircuit.cx(self._registre_dalles[info_current_player["position"]], self._registre_marmotte[self._current_player])
 
         # entangling the two marmottes
-        qcircuit.cx(marmottes_reg[self._current_player], marmottes_reg[entangled_player])
+        qcircuit.cx(self._registre_marmotte[self._current_player], self._registre_marmotte[entangled_player])
         self._marmottes[self._current_player]["position"] = self._marmottes[entangled_player]["position"]
-        print(qcircuit)
+
         return qcircuit
 
-    def avancer(self):
-        marmottes_reg = QuantumRegister(self.num_players)
-        dalles_reg = QuantumRegister(self.num_dalles)
-        qcircuit = QuantumCircuit(marmottes_reg, dalles_reg)
+    def avancer(self) -> QuantumCircuit:
+        qcircuit = QuantumCircuit(self._registre_marmotte,self._registre_dalles)
 
         info_current_player = self._marmottes[self._current_player]
-        qcircuit.cx(dalles_reg[info_current_player["position"] + 1], marmottes_reg[self._current_player])
 
-        self._marmottes[self._current_player]["positions"] += 1
+        qcircuit.cx(self._registre_dalles[info_current_player["position"] + 1], self._registre_marmotte[self._current_player])
+
+        self._marmottes[self._current_player]["position"] += 1
 
         return qcircuit
 
     # Effet tunnel
     def terrier(self, greedyness) -> QuantumCircuit:
-        marmottes_reg = QuantumRegister(self.num_players)
-        dalles_reg = QuantumRegister(self.num_dalles)
-        qcircuit = QuantumCircuit(marmottes_reg, dalles_reg)
+        qcircuit = QuantumCircuit(self._registre_marmotte, self._registre_dalles)
 
-        probability = 1 / (greedyness ^ 2)
+        probability = 1 / (greedyness ** 2)
         random_num = np.random.uniform(0, 1)
 
         if random_num < probability:
             self._marmottes[self._current_player]["position"] += greedyness
 
-        qcircuit.cx(dalles_reg[self._marmottes[self._current_player]["position"]] - 1,
-                    marmottes_reg[self._current_player])
+        qcircuit.cx(self._registre_dalles[self._marmottes[self._current_player]["position"]],
+                    self._registre_marmotte[self._current_player])
 
         return qcircuit
 
@@ -124,14 +121,14 @@ class CroqueLaitue:
         qcircuit = QuantumCircuit(marmottes_reg, dalles_reg, classical_reg)
 
         for i in range(len(dalles_reg)):
-            angle = np.random.uniform(0, 2 * np.pi)
+            angle = np.random.uniform(0, np.pi/4)
             qcircuit.ry(angle, dalles_reg[i])
 
         self._quantum_circuit = qcircuit
 
         return qcircuit
 
-    def _read_measure(self):
+    def _read_measure(self) -> None:
         simulator = AerSimulator()
         transpiled_circuit = transpile(self._quantum_circuit, backend=simulator)
         result = simulator.run(transpiled_circuit, shots=1).result()
@@ -140,7 +137,6 @@ class CroqueLaitue:
         for i in range(len(result)):
             if result[i] == "1":
                 self._marmottes[i]["num_marmottes"] -= 1
-                print("Oh no! One of your marmotte has been swallowed :(")
+                print(f"Oh no! Player {i}, one of your marmotte has been swallowed :(")
                 self._marmottes[i]["position"] = 0
-
-        return None
+        print(self._marmottes)
