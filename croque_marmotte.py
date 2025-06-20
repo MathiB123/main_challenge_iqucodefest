@@ -33,11 +33,13 @@ class CroqueLaitue:
         while not self.partie_terminee:
             self.renderer.add_text(f"Tour : {self.tour_courant}")
             self.renderer.render()
-            
+
             self.jouer_round()
+            time.sleep(0.5) #Gives a bit of time to see what is going on
+            self.renderer.clear_text()
             self._read_measure()
 
-            self.renderer.clear_render()
+            self.renderer.clear_map()
             for i, marmotte in enumerate(self._marmottes):
                 self.renderer.draw_groundhog(marmotte["position"], i)
                 if marmotte["position"] == self.num_dalles-1:
@@ -47,6 +49,7 @@ class CroqueLaitue:
             self.tour_courant += 1
         
         self.renderer.render()
+        time.sleep(2) #DO NOT REMOVE THE NOTEBOOK CAN'T DISPLAY VICTORY 
 
     def jouer_round(self):
         joueur = 0
