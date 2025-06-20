@@ -1,5 +1,6 @@
 from IPython.display import clear_output
 from math import ceil
+import os
 
 class Renderer:
 
@@ -20,6 +21,9 @@ class Renderer:
     def clear_text(self):
         self.char_matrix[0] = ["\n"]
 
+    def clear_tempo_text(self):
+        self.char_matrix[1] = ["\n"]
+
     def clear_map(self):
         for i in range(2, self.nb_lines):
             self.char_matrix[i] = [" " for _ in range(Renderer.MIN_NB_CHAR)]
@@ -27,6 +31,7 @@ class Renderer:
 
     def clear_render(self):
         self.clear_text()
+        self.clear_tempo_text()
         self.clear_map()
     
     def add_text(self, text:str):
@@ -39,6 +44,18 @@ class Renderer:
 
         for char in text:
             line.append(char)
+        line.append("\n")
+
+    def add_tempo_text(self, text:str):
+        line = self.char_matrix[1]
+        if line == ["\n"]:
+            self.char_matrix[1] = []
+            line = self.char_matrix[1]
+
+        for char in text:
+            line.append(char)
+
+        line.append("\n")
             
 
     def draw_map(self):
@@ -111,8 +128,17 @@ class Renderer:
             self.char_matrix[start_y + 4][start_x +6] = str(player_num)
 
     
-    def render(self):
+    def clear_any_output(self):
         clear_output(wait= True)
+
+        # Check if the operating system is Windows ('nt') or Unix-like ('posix')
+        if os.name == 'nt':
+            os.system('cls')  # Command for Windows
+        else:
+            os.system('clear') # Command for Linux/macOS
+
+    def render(self):
+        self.clear_any_output()
         result = ""
 
         for i in range (self.nb_lines):
