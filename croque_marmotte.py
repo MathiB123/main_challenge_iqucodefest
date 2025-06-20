@@ -227,7 +227,7 @@ class CroqueLaitue:
             self._registre_marmotte[self._current_player],
         )
 
-        # entangling the two marmottes
+        # entangling the two groundhogs
         qcircuit.cx(
             self._registre_marmotte[self._current_player],
             self._registre_marmotte[entangled_player],
