@@ -54,9 +54,14 @@ class CroqueLaitue:
                     f"Quelle action veux-tu faire, joueur {self._current_player}? (Pour s'intriquer : 1, pour avancer : 2, pour tenter le terrier : 3, pour decalisser : q)")
                 if action == "1":
                     joueur_vlimeux = int(input("Avec quel joueur veux-tu t'intriquer?"))
-                    qc = self.intriquer(joueur_vlimeux)
-                    qc_intriq.compose(qc, inplace=True)
-                    print(f"Joueur {self._current_player} s'intrique avec joueur {joueur_vlimeux}")
+
+                    if self._current_player == joueur_vlimeux:
+                        print(f"Joueur {self._current_player}, on ne peut pas s'intriquer avec soi-même!")
+                        action = None
+                    else:
+                        qc = self.intriquer(joueur_vlimeux)
+                        qc_intriq.compose(qc, inplace=True)
+                        print(f"Joueur {self._current_player} s'intrique avec joueur {joueur_vlimeux}")
                 elif action == "2":
                     qc = self.avancer()
                     qc_avancer.compose(qc, inplace=True)
