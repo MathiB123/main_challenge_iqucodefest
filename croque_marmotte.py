@@ -41,8 +41,7 @@ class CroqueLaitue:
         qc_total = QuantumCircuit(self._registre_marmotte, self._registre_dalles, classical_reg)
         qc_intriq, qc_avancer, qc_terrier = QuantumCircuit(self._registre_marmotte, self._registre_dalles), QuantumCircuit(self._registre_marmotte, self._registre_dalles), QuantumCircuit(self._registre_marmotte, self._registre_dalles)
         
-        for joueur in range(self.num_players):
-        # while joueur <= self.num_players - 1:
+        while joueur <= self.num_players - 1:
             self._current_player = joueur
             while self._marmottes[joueur]["num_marmottes"] < 1:
                 joueur += 1
@@ -76,7 +75,7 @@ class CroqueLaitue:
                 else:
                     print(f"Vous n'avez pas entré une option possible joueur {self._current_player}!")
 
-            # joueur += 1
+            joueur += 1
 
         qc_complet = self._initialize_circuit()
         qc_complet.compose(qc_avancer, inplace=True)
