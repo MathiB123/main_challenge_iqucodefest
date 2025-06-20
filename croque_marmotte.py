@@ -49,6 +49,7 @@ class CroqueLaitue:
                     sys.exit("Partie terminée, vous avez tous perdus!")
             action = None
             while action not in ["1", "2", "3", "q"]:
+                time.sleep(0.5)
                 action = input(
                     f"Quelle action veux-tu faire, joueur {self._current_player}? (Pour s'intriquer : 1, pour avancer : 2, pour tenter le terrier : 3, pour decalisser : q)")
                 if action == "1":
@@ -66,7 +67,6 @@ class CroqueLaitue:
                     sys.exit("Vous avez quitté avec succès.")
                 else:
                     print(f"Vous n'avez pas entré une option possible joueur {self._current_player}!")
-                    action = None
 
             joueur += 1
 
