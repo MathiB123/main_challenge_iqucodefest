@@ -2,6 +2,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit_aer import AerSimulator
 import numpy as np
 import sys
+import time
 
 
 class CroqueLaitue:
@@ -18,14 +19,13 @@ class CroqueLaitue:
         self._registre_marmotte = QuantumRegister(self.num_players)
         self._registre_dalles = QuantumRegister(self.num_dalles)
 
-        # case de depart
-
     def play_game(self):
         print("Début de la partie! \n")
 
         while not self.partie_terminee:
-            print(f"Tour : {self.tour_courant} \n")
+            print(f"Tour : {self.tour_courant}")
 
+            time.sleep(0.5)
             self.jouer_round()
             self._read_measure()
 
@@ -47,7 +47,8 @@ class CroqueLaitue:
                 if joueur > self.num_players - 1:
                     self.partie_terminee = True
                     sys.exit("Partie terminée, vous avez tous perdus!")
-            else:
+            action = None
+            while action not in ["1", "2", "3", "q"]:
                 action = input(
                     f"Quelle action veux-tu faire, joueur {self._current_player}? (Pour s'intriquer : 1, pour avancer : 2, pour tenter le terrier : 3, pour decalisser : q)")
                 if action == "1":
@@ -64,8 +65,10 @@ class CroqueLaitue:
                 elif action == "q":
                     sys.exit("Vous avez quitté avec succès.")
                 else:
-                    print("Vous n'avez pas entré une option possible!")
-                joueur += 1
+                    print(f"Vous n'avez pas entré une option possible joueur {self._current_player}!")
+                    action = None
+
+            joueur += 1
 
         qc_complet = self._initialize_circuit()
         qc_complet.compose(qc_avancer, inplace=True)
@@ -108,6 +111,9 @@ class CroqueLaitue:
 
         if random_num < probability:
             self._marmottes[self._current_player]["position"] += greedyness
+            print(f"Terrier succeed for player {self._current_player}")
+        else:
+            print(f"Terrier failed for player {self._current_player}")
 
         qcircuit.cx(self._registre_dalles[self._marmottes[self._current_player]["position"]],
                     self._registre_marmotte[self._current_player])
@@ -139,4 +145,4 @@ class CroqueLaitue:
                 self._marmottes[i]["num_marmottes"] -= 1
                 print(f"Oh no! Player {i}, one of your marmotte has been swallowed :(")
                 self._marmottes[i]["position"] = 0
-        print(self._marmottes)
+        print(self._marmottes,"\n")
