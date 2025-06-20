@@ -87,6 +87,40 @@ class Renderer:
         for i in range(2, self.nb_lines):
             line = self.char_matrix[i]
             line[len(line) - 1] = "\n"
+
+        r"""
+        Draws the lettuce
+         ___
+        /@@@\
+        (@@@)
+        \@@/
+         
+        """
+
+        start_x = ((self.num_cells - 1) % Renderer.NUM_CELL_PER_ROW) * (Renderer.CELL_WIDTH + 1)
+        start_y = (self.num_cells -1 ) // Renderer.NUM_CELL_PER_ROW* Renderer.CELL_HEIGHT + 2
+
+        self.char_matrix[start_y + 1][start_x + 2] = "_"
+        self.char_matrix[start_y + 1][start_x + 3] = "_"
+        self.char_matrix[start_y + 1][start_x + 4] = "_"
+
+        self.char_matrix[start_y + 2][start_x + 1] = "/"
+        self.char_matrix[start_y + 2][start_x + 2] = "@"
+        self.char_matrix[start_y + 2][start_x + 3] = "@"
+        self.char_matrix[start_y + 2][start_x + 4] = "@"
+        self.char_matrix[start_y + 2][start_x + 5] = "\\"
+
+        self.char_matrix[start_y + 3][start_x + 1] = "("
+        self.char_matrix[start_y + 3][start_x + 2] = "@"
+        self.char_matrix[start_y + 3][start_x + 3] = "@"
+        self.char_matrix[start_y + 3][start_x + 4] = "@"
+        self.char_matrix[start_y + 3][start_x + 5] = ")"
+        
+        self.char_matrix[start_y + 4][start_x + 1] = "\\"
+        self.char_matrix[start_y + 4][start_x + 2] = "@"
+        self.char_matrix[start_y + 4][start_x + 3] = "@"
+        self.char_matrix[start_y + 4][start_x + 4] = "/"
+        
     
     def draw_groundhog(self, cell_num : int, player_num : int):
         start_x = (cell_num % Renderer.NUM_CELL_PER_ROW) * (Renderer.CELL_WIDTH + 1)
