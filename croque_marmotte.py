@@ -68,24 +68,24 @@ class CroqueLaitue:
             while action not in ["1", "2", "3", "q"]:
                 #time.sleep(.5)
                 self.renderer.clear_tempo_text()
-                self.renderer.add_tempo_text( f"Player {self._current_player}, what will you do?\n1 : Entangle yourself with another player;\n2 : Frolic in the garden;\n3 : Quantum Tunnelling,\nQ : Exit the game")
+                self.renderer.add_tempo_text( f"Player {self._current_player}, what will you do ?\n1 : Make a friend;\n2 : Frolic in the garden;\n3 : Dig a tunnel,\nQ : Exit the game")
                 self.renderer.render()
                 action = input()
                 if action == "1":
                     self.renderer.clear_tempo_text()
-                    self.renderer.add_tempo_text("With whom do you want to entangle?")
+                    self.renderer.add_tempo_text("Whose your new friend ?")
                     self.renderer.render()
                     joueur_vlimeux = int(input())
                     if self._current_player == joueur_vlimeux:
                         self.renderer.clear_tempo_text()
-                        self.renderer.add_tempo_text(f"Player {self._current_player}, you can't be entangled with yourself !!!\nPress ENTER to make a valide choice !")
+                        self.renderer.add_tempo_text(f"Player {self._current_player}, you can't be friend with yourself !!!\nPress ENTER to make a valide choice !")
                         self.renderer.render()
                         input()
                         action = None
                     else:
                         qc = self.intriquer(joueur_vlimeux)
                         qc_intriq.compose(qc, inplace=True)
-                        self.renderer.add_text(f"Player {self._current_player} is entangled with {joueur_vlimeux}")
+                        self.renderer.add_text(f"Player {self._current_player} want to be friend with {joueur_vlimeux}")
                         self.renderer.render()
                         input()
                 elif action == "2":
@@ -95,7 +95,7 @@ class CroqueLaitue:
                     self.renderer.render()
                 elif action == "3":
                     self.renderer.clear_tempo_text()
-                    self.renderer.add_tempo_text("How far do you want to tunnel?")
+                    self.renderer.add_tempo_text("How far do you want to dig your tunnel ?")
                     self.renderer.render()
                     inputed = input()
                     greedyness = -1
@@ -199,6 +199,6 @@ class CroqueLaitue:
         for i in range(len(result)):
             if result[i] == "1":
                 self._marmottes[i]["num_marmottes"] -= 1
-                self.renderer.add_text(f"Oh no! Player {i}, one of your marmotte has been trapped :(")
+                self.renderer.add_text(f"Oh no! Player {i}, one of your groundhog has been trapped :(")
                 self.renderer.render()
                 self._marmottes[i]["position"] = 0
