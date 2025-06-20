@@ -143,11 +143,10 @@ class CroqueLaitue:
         info_current_player = self._marmottes[self._current_player]
         qcircuit.cx(self._registre_dalles[info_current_player["position"]], self._registre_marmotte[self._current_player])
 
-        # entangling the two marmottes
-        qcircuit.cx(self._registre_marmotte[self._current_player], self._registre_marmotte[entangled_player])
-
         random_num = np.random.uniform(0, 1)
         if random_num < 0.25:
+            # entangling the two marmottes
+            qcircuit.cx(self._registre_marmotte[self._current_player], self._registre_marmotte[entangled_player])
             self._marmottes[self._current_player]["position"] = self._marmottes[entangled_player]["position"]
             self.renderer.add_text(f"Entanglement succeeded")
             self.renderer.render()
