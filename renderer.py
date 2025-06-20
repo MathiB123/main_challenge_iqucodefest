@@ -39,8 +39,6 @@ class Renderer:
         if line == ["\n"]:
             self.char_matrix[0] = []
             line = self.char_matrix[0]
-        else :
-            line.append("\n")
 
         for char in text:
             line.append(char)
@@ -101,6 +99,11 @@ class Renderer:
         |   / 
         |___|n  
         """
+
+        if self.char_matrix[start_y + 4][start_x +6] != " ":
+            self.char_matrix[start_y + 4][start_x +6] = "n"
+            return
+        
         self.char_matrix[start_y + 1][start_x + 1] = "^"
         self.char_matrix[start_y + 1][start_x +2] = "_"
         self.char_matrix[start_y + 1][start_x +3] = "_"
@@ -120,12 +123,7 @@ class Renderer:
         self.char_matrix[start_y + 4][start_x +3] = "_"
         self.char_matrix[start_y + 4][start_x +4] = "_"
         self.char_matrix[start_y + 4][start_x +5] = "|"
-
-        if self.char_matrix[start_y + 4][start_x +6] != " ":
-            self.char_matrix[start_y + 4][start_x +6] = "0"
-            self.char_matrix[start_y + 5][start_x +6] = "1"
-        else:
-            self.char_matrix[start_y + 4][start_x +6] = str(player_num)
+        self.char_matrix[start_y + 4][start_x +6] = str(player_num)
 
     
     def clear_any_output(self):
