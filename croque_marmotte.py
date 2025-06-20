@@ -129,8 +129,20 @@ class CroqueLaitue:
                     self.renderer.clear_tempo_text()
                     self.renderer.add_tempo_text("Who's your new friend ?")
                     self.renderer.render()
-                    joueur_vlimeux = int(input())
-                    if self._current_player == joueur_vlimeux:
+                    inputed = input()
+                    joueur_vlimeux = -1
+                    try:
+                        joueur_vlimeux = int(inputed)
+                    except BaseException:
+                        joueur_vlimeux = -1
+                    if joueur_vlimeux < 0 :
+                        self.renderer.add_tempo_text(
+                            f"Player {self._current_player}, you need to input a valid number!!!\nPress ENTER to make a valide choice !"
+                        )
+                        self.renderer.render()
+                        input()
+                        action = None
+                    elif self._current_player == joueur_vlimeux:
                         self.renderer.clear_tempo_text()
                         self.renderer.add_tempo_text(
                             f"Player {self._current_player}, you can't be friend with yourself !!!\nPress ENTER to make a valide choice !"
