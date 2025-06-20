@@ -13,7 +13,7 @@ class CroqueLaitue:
         self.num_players = num_players
         self.num_dalles = num_dalles
         self._marmottes = [{"num_marmottes": 2, "position": 0} for _ in range(num_players)]
-        self.tour_courant = 0
+        self.tour_courant = 1
         self.partie_terminee = False
         self._current_player = 0
         self._registre_marmotte = QuantumRegister(self.num_players)
