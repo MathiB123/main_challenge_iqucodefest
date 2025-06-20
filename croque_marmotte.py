@@ -25,13 +25,13 @@ class CroqueLaitue:
         # case de depart
 
     def play_game(self) -> None:
-        self.renderer.add_text("Début de la partie!")
+        self.renderer.add_text("Start!")
 
         for i in range(len(self._marmottes)):
             self.renderer.draw_groundhog(0,i)
 
         while not self.partie_terminee:
-            self.renderer.add_text(f"Tour : {self.tour_courant}")
+            self.renderer.add_text(f"Round : {self.tour_courant}")
             self.renderer.render()
 
             self.jouer_round()
@@ -44,7 +44,7 @@ class CroqueLaitue:
                 self.renderer.draw_groundhog(marmotte["position"], i)
                 if marmotte["position"] == self.num_dalles-1:
                     self.partie_terminee = True
-                    self.renderer.add_text(f"Partie terminée! Le joueur {i} a gagné!")
+                    self.renderer.add_text(f"Game Over! Player {i} has won!")
             
             self.tour_courant += 1
         
@@ -63,41 +63,41 @@ class CroqueLaitue:
                 joueur += 1
                 if joueur > self.num_players - 1:
                     self.partie_terminee = True
-                    sys.exit("Partie terminée, vous avez tous perdus!")
+                    sys.exit("Game over, everyone lost!")
             action = None
             while action not in ["1", "2", "3", "q"]:
                 time.sleep(0.5)
                 action = input(
-                    f"Quelle action veux-tu faire, joueur {self._current_player}? (Pour s'intriquer : 1, pour avancer : 2, pour tenter le terrier : 3, pour decalisser : q)")
+                    f"Player {self._current_player}, what will you do?\n1 : Entangle yourself with another player\n;\n2 : Frolic in the garden;\n 3 : Quantum Tunnelling,\nQ : Exit the game")
                 if action == "1":
-                    joueur_vlimeux = int(input("Avec quel joueur veux-tu t'intriquer?"))
+                    joueur_vlimeux = int(input("With whom do you want to entangle?"))
                     if self._current_player == joueur_vlimeux:
-                        self.renderer.add_text(f"Joueur {self._current_player}, on ne peut pas s'intriquer avec soi-même!")
+                        self.renderer.add_text(f"Player {self._current_player}, you can't be entangled with yourself !!!")
                         self.renderer.render()
                         action = None
                     else:
                         qc = self.intriquer(joueur_vlimeux)
                         qc_intriq.compose(qc, inplace=True)
-                        self.renderer.add_text(f"Joueur {self._current_player} s'intrique avec joueur {joueur_vlimeux}")
+                        self.renderer.add_text(f"Player {self._current_player} is entangled with {joueur_vlimeux}")
                         self.renderer.render()
                 elif action == "2":
                     qc = self.avancer()
                     qc_avancer.compose(qc, inplace=True)
-                    self.renderer.add_text(f"Joueur {self._current_player} avance d'une case")
+                    self.renderer.add_text(f"Player {self._current_player} moved one square over")
                     self.renderer.render()
                 elif action == "3":
-                    greedyness = int(input("De combien de case aimerais-tu avancer?"))
+                    greedyness = int(input("How far do you want to tunnel?"))
                     if greedyness < 1:
-                        self.renderer.add_text(f"Joueur {self._current_player}, le terrier doit être plus grand que 0!")
+                        self.renderer.add_text(f"Player {self._current_player}, you need to go farther than 0 squares !!!")
                         self.renderer.render()
                         action = None
                     else:
                         qc = self.terrier(greedyness)
                         qc_terrier.compose(qc, inplace=True)
                 elif action == "q":
-                    sys.exit("Vous avez quitté avec succès.")
+                    sys.exit("You successfully left the game.")
                 else:
-                    self.renderer.add_text(f"Vous n'avez pas entré une option possible joueur {self._current_player}!")
+                    self.renderer.add_text(f"Player {self._current_player} you didn't enter a valide option !!!")
                     self.renderer.render()
 
             joueur += 1
@@ -143,10 +143,10 @@ class CroqueLaitue:
 
         if random_num < probability:
             self._marmottes[self._current_player]["position"] += greedyness
-            self.renderer.add_text(f"Terrier succeeded for player {self._current_player}")
+            self.renderer.add_text(f"Player {self._current_player}'s tunnel succeeded")
             self.renderer.render()
         else:
-            self.renderer.add_text(f"Terrier failed for player {self._current_player}")
+            self.renderer.add_text(f"Player {self._current_player}'s tunnel failed")
             self.renderer.render()
 
         qcircuit.cx(self._registre_dalles[self._marmottes[self._current_player]["position"]],
@@ -177,6 +177,6 @@ class CroqueLaitue:
         for i in range(len(result)):
             if result[i] == "1":
                 self._marmottes[i]["num_marmottes"] -= 1
-                self.renderer.add_text(f"Oh no! Player {i}, one of your marmotte has been swallowed :(")
+                self.renderer.add_text(f"Oh no! Player {i}, one of your marmotte has been trapped :(")
                 self.renderer.render()
                 self._marmottes[i]["position"] = 0
