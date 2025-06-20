@@ -136,8 +136,10 @@ class CroqueLaitue:
         if random_num < probability:
             self._marmottes[self._current_player]["position"] += greedyness
             self.renderer.add_text(f"Terrier succeeded for player {self._current_player}")
+            self.renderer.render()
         else:
             self.renderer.add_text(f"Terrier failed for player {self._current_player}")
+            self.renderer.render()
 
         qcircuit.cx(self._registre_dalles[self._marmottes[self._current_player]["position"]],
                     self._registre_marmotte[self._current_player])
