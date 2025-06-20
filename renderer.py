@@ -103,7 +103,12 @@ class Renderer:
         self.char_matrix[start_y + 4][start_x +3] = "_"
         self.char_matrix[start_y + 4][start_x +4] = "_"
         self.char_matrix[start_y + 4][start_x +5] = "|"
-        self.char_matrix[start_y + 4][start_x +6] = str(player_num)
+
+        if self.char_matrix[start_y + 4][start_x +6] != " ":
+            self.char_matrix[start_y + 4][start_x +6] = "0"
+            self.char_matrix[start_y + 5][start_x +6] = "1"
+        else:
+            self.char_matrix[start_y + 4][start_x +6] = str(player_num)
 
     
     def render(self):
