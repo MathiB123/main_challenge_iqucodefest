@@ -85,13 +85,13 @@ class CroqueLaitue:
                     else:
                         qc = self.intriquer(joueur_vlimeux)
                         qc_intriq.compose(qc, inplace=True)
-                        self.renderer.add_text(f"Player {self._current_player} want to be friend with {joueur_vlimeux}")
+                        self.renderer.add_text(f"Player {self._current_player} wants to be friend with {joueur_vlimeux}")
                         self.renderer.render()
                         input()
                 elif action == "2":
                     qc = self.avancer()
                     qc_avancer.compose(qc, inplace=True)
-                    self.renderer.add_text(f"Player {self._current_player} moved one square over")
+                    self.renderer.add_text(f"Player {self._current_player} will move one square over")
                     self.renderer.render()
                 elif action == "3":
                     self.renderer.clear_tempo_text()
@@ -110,9 +110,11 @@ class CroqueLaitue:
                         input()
                         action = None
                     elif greedyness > self.num_dalles - 1:
-                        self.renderer.add_text(f"Player {self._current_player}, you need to go less than {self.num_dalles} squares !!!")
+                        self.renderer.clear_tempo_text()
+                        self.renderer.add_tempo_text(f"Player {self._current_player}, you need to go less than {self.num_dalles} squares !!!\nPress ENTER to make a valide choice")
                         self.renderer.render()
                         action = None
+                        input()
                     else:
                         qc = self.terrier(greedyness)
                         qc_terrier.compose(qc, inplace=True)
