@@ -84,8 +84,13 @@ class CroqueLaitue:
                     self.renderer.render()
                 elif action == "3":
                     greedyness = int(input("De combien de case aimerais-tu avancer?"))
-                    qc = self.terrier(greedyness)
-                    qc_terrier.compose(qc, inplace=True)
+                    if greedyness < 1:
+                        self.renderer.add_text(f"Joueur {self._current_player}, le terrier doit être plus grand que 0!")
+                        self.renderer.render()
+                        action = None
+                    else:
+                        qc = self.terrier(greedyness)
+                        qc_terrier.compose(qc, inplace=True)
                 elif action == "q":
                     sys.exit("Vous avez quitté avec succès.")
                 else:
@@ -170,4 +175,5 @@ class CroqueLaitue:
             if result[i] == "1":
                 self._marmottes[i]["num_marmottes"] -= 1
                 self.renderer.add_text(f"Oh no! Player {i}, one of your marmotte has been swallowed :(")
+                self.renderer.render()
                 self._marmottes[i]["position"] = 0
