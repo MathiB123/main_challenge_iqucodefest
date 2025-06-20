@@ -54,7 +54,6 @@ class CroqueLaitue:
                     f"Quelle action veux-tu faire, joueur {self._current_player}? (Pour s'intriquer : 1, pour avancer : 2, pour tenter le terrier : 3, pour decalisser : q)")
                 if action == "1":
                     joueur_vlimeux = int(input("Avec quel joueur veux-tu t'intriquer?"))
-
                     if self._current_player == joueur_vlimeux:
                         print(f"Joueur {self._current_player}, on ne peut pas s'intriquer avec soi-même!")
                         action = None
@@ -118,7 +117,7 @@ class CroqueLaitue:
 
         if random_num < probability:
             self._marmottes[self._current_player]["position"] += greedyness
-            print(f"Terrier succeed for player {self._current_player}")
+            print(f"Terrier succeeded for player {self._current_player}")
         else:
             print(f"Terrier failed for player {self._current_player}")
 
