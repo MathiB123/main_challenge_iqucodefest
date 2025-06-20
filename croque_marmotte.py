@@ -109,6 +109,10 @@ class CroqueLaitue:
                         self.renderer.render()
                         input()
                         action = None
+                    elif greedyness > self.num_dalles - 1:
+                        self.renderer.add_text(f"Player {self._current_player}, you need to go less than {self.num_dalles} squares !!!")
+                        self.renderer.render()
+                        action = None
                     else:
                         qc = self.terrier(greedyness)
                         qc_terrier.compose(qc, inplace=True)
@@ -141,8 +145,15 @@ class CroqueLaitue:
 
         # entangling the two marmottes
         qcircuit.cx(self._registre_marmotte[self._current_player], self._registre_marmotte[entangled_player])
-        self._marmottes[self._current_player]["position"] = self._marmottes[entangled_player]["position"]
 
+        random_num = np.random.uniform(0, 1)
+        if random_num < 0.25:
+            self._marmottes[self._current_player]["position"] = self._marmottes[entangled_player]["position"]
+            self.renderer.add_text(f"Entanglement succeeded")
+            self.renderer.render()
+        else:
+            self.renderer.add_text(f"Entanglement failed")
+            self.renderer.render()
         return qcircuit
 
     def avancer(self) -> QuantumCircuit:
@@ -182,7 +193,7 @@ class CroqueLaitue:
         classical_reg = ClassicalRegister(self.num_players)
         qcircuit = QuantumCircuit(marmottes_reg, dalles_reg, classical_reg)
 
-        for i in range(len(dalles_reg)):
+        for i in range(1,len(dalles_reg)):
             angle = np.random.uniform(0, np.pi/4)
             qcircuit.ry(angle, dalles_reg[i])
 
