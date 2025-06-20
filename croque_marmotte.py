@@ -66,30 +66,48 @@ class CroqueLaitue:
                     sys.exit("Game over, everyone lost!")
             action = None
             while action not in ["1", "2", "3", "q"]:
-                time.sleep(0.5)
-                action = input(
-                    f"Player {self._current_player}, what will you do?\n1 : Entangle yourself with another player\n;\n2 : Frolic in the garden;\n 3 : Quantum Tunnelling,\nQ : Exit the game")
+                #time.sleep(.5)
+                self.renderer.clear_tempo_text()
+                self.renderer.add_tempo_text( f"Player {self._current_player}, what will you do?\n1 : Entangle yourself with another player;\n2 : Frolic in the garden;\n3 : Quantum Tunnelling,\nQ : Exit the game")
+                self.renderer.render()
+                action = input()
                 if action == "1":
-                    joueur_vlimeux = int(input("With whom do you want to entangle?"))
+                    self.renderer.clear_tempo_text()
+                    self.renderer.add_tempo_text("With whom do you want to entangle?")
+                    self.renderer.render()
+                    joueur_vlimeux = int(input())
                     if self._current_player == joueur_vlimeux:
-                        self.renderer.add_text(f"Player {self._current_player}, you can't be entangled with yourself !!!")
+                        self.renderer.clear_tempo_text()
+                        self.renderer.add_tempo_text(f"Player {self._current_player}, you can't be entangled with yourself !!!\nPress ENTER to make a valide choice !")
                         self.renderer.render()
+                        input()
                         action = None
                     else:
                         qc = self.intriquer(joueur_vlimeux)
                         qc_intriq.compose(qc, inplace=True)
                         self.renderer.add_text(f"Player {self._current_player} is entangled with {joueur_vlimeux}")
                         self.renderer.render()
+                        input()
                 elif action == "2":
                     qc = self.avancer()
                     qc_avancer.compose(qc, inplace=True)
                     self.renderer.add_text(f"Player {self._current_player} moved one square over")
                     self.renderer.render()
                 elif action == "3":
-                    greedyness = int(input("How far do you want to tunnel?"))
+                    self.renderer.clear_tempo_text()
+                    self.renderer.add_tempo_text("How far do you want to tunnel?")
+                    self.renderer.render()
+                    inputed = input()
+                    greedyness = -1
+                    try:
+                        greedyness = int(inputed)
+                    except BaseException:
+                        greedyness = -1
                     if greedyness < 1:
-                        self.renderer.add_text(f"Player {self._current_player}, you need to go farther than 0 squares !!!")
+                        self.renderer.clear_tempo_text()
+                        self.renderer.add_tempo_text(f"Player {self._current_player}, you need to go farther than 0 squares !!!\nPress ENTER to make a valide choice")
                         self.renderer.render()
+                        input()
                         action = None
                     else:
                         qc = self.terrier(greedyness)
@@ -97,10 +115,14 @@ class CroqueLaitue:
                 elif action == "q":
                     sys.exit("You successfully left the game.")
                 else:
-                    self.renderer.add_text(f"Player {self._current_player} you didn't enter a valide option !!!")
+                    self.renderer.clear_tempo_text()
+                    self.renderer.add_tempo_text(f"Player {self._current_player} you didn't enter a valide option !!!\nPress ENTER to make a valide choice !")
                     self.renderer.render()
+                    input()
 
             joueur += 1
+        self.renderer.clear_tempo_text()
+        self.renderer.render()
 
         qc_complet = self._initialize_circuit()
         qc_complet.compose(qc_avancer, inplace=True)
