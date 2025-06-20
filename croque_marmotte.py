@@ -45,6 +45,8 @@ class CroqueLaitue:
                     self.renderer.add_text(f"Partie terminée! Le joueur {i} a gagné!")
             
             self.tour_courant += 1
+        
+        self.renderer.render()
 
     def jouer_round(self):
         joueur = 0
@@ -67,16 +69,19 @@ class CroqueLaitue:
                 if action == "1":
                     joueur_vlimeux = int(input("Avec quel joueur veux-tu t'intriquer?"))
                     if self._current_player == joueur_vlimeux:
-                        print(f"Joueur {self._current_player}, on ne peut pas s'intriquer avec soi-même!")
+                        self.renderer.add_text(f"Joueur {self._current_player}, on ne peut pas s'intriquer avec soi-même!")
+                        self.renderer.render()
                         action = None
                     else:
                         qc = self.intriquer(joueur_vlimeux)
                         qc_intriq.compose(qc, inplace=True)
-                        print(f"Joueur {self._current_player} s'intrique avec joueur {joueur_vlimeux}")
+                        self.renderer.add_text(f"Joueur {self._current_player} s'intrique avec joueur {joueur_vlimeux}")
+                        self.renderer.render()
                 elif action == "2":
                     qc = self.avancer()
                     qc_avancer.compose(qc, inplace=True)
-                    print(f"Joueur {self._current_player} avance d'une case")
+                    self.renderer.add_text(f"Joueur {self._current_player} avance d'une case")
+                    self.renderer.render()
                 elif action == "3":
                     greedyness = int(input("De combien de case aimerais-tu avancer?"))
                     qc = self.terrier(greedyness)
@@ -84,7 +89,8 @@ class CroqueLaitue:
                 elif action == "q":
                     sys.exit("Vous avez quitté avec succès.")
                 else:
-                    print(f"Vous n'avez pas entré une option possible joueur {self._current_player}!")
+                    self.renderer.add_text(f"Vous n'avez pas entré une option possible joueur {self._current_player}!")
+                    self.renderer.render()
 
             joueur += 1
 
@@ -129,9 +135,9 @@ class CroqueLaitue:
 
         if random_num < probability:
             self._marmottes[self._current_player]["position"] += greedyness
-            print(f"Terrier succeeded for player {self._current_player}")
+            self.renderer.add_text(f"Terrier succeeded for player {self._current_player}")
         else:
-            print(f"Terrier failed for player {self._current_player}")
+            self.renderer.add_text(f"Terrier failed for player {self._current_player}")
 
         qcircuit.cx(self._registre_dalles[self._marmottes[self._current_player]["position"]],
                     self._registre_marmotte[self._current_player])
