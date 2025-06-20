@@ -56,9 +56,11 @@ class CroqueLaitue:
                     joueur_vlimeux = int(input("Avec quel joueur veux-tu t'intriquer?"))
                     qc = self.intriquer(joueur_vlimeux)
                     qc_intriq.compose(qc, inplace=True)
+                    print(f"Joueur {self._current_player} s'intrique avec joueur {joueur_vlimeux}")
                 elif action == "2":
                     qc = self.avancer()
                     qc_avancer.compose(qc, inplace=True)
+                    print(f"Joueur {self._current_player} avance d'une case")
                 elif action == "3":
                     greedyness = int(input("De combien de case aimerais-tu avancer?"))
                     qc = self.terrier(greedyness)
